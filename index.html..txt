@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Splinter Park (Starter)</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: black;
+    }
+    canvas {
+      display: block;
+      margin: auto;
+      background: #111;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="gameCanvas" width="800" height="600"></canvas>
+
+  <script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+
+    // Player
+    let player = { x: 400, y: 300, size: 30, speed: 5 };
+
+    // Enemy
+    let enemy = { x: 100, y: 100, size: 30, speed: 2 };
+
+    // Movement
+    let keys = {};
+    document.addEventListener("keydown", e => keys[e.key] = true);
+    document.addEventListener("keyup", e => keys[e.key] = false);
+
+    function update() {
+      // Player movement
+      if (keys["ArrowUp"]) player.y -= player.speed;
+      if (keys["ArrowDown"]) player.y += player.speed;
+      if (keys["ArrowLeft"]) player.x -= player.speed;
+      if (keys["ArrowRight"]) player.x += player.speed;
+
+      // Enemy chases player
+      let dx = player.x - enemy.x;
+      let dy = player.y - enemy.y;
+      let dist = Math.sqrt(dx*dx + dy*dy);
+      if (dist > 0) {
+        enemy.x += (dx / dist) * enemy.speed;
+        enemy.y += (dy / dist) * enemy.speed;
+      }
+
+      // Game over check
+      if (Math.abs(player.x - enemy.x) < 20 && Math.abs(player.y - enemy.y) < 20) {
+        alert("Game Over! Refresh to play again.");
+        document.location.reload();
+      }
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Player (blue)
+      ctx.fillStyle = "blue";
+      ctx.fillRect(player.x, player.y, player.size, player.size);
+
+      // Enemy (red)
+      ctx.fillStyle = "red";
+      ctx.fillRect(enemy.x, enemy.y, enemy.size, enemy.size);
+    }
+
+    function loop() {
+      update();
+      draw();
+      requestAnimationFrame(loop);
+    }
+
+    loop();
+  </script>
+</body>
+</html>
